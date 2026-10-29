@@ -1,0 +1,182 @@
+[
+  {
+    "provider_id": "P001",
+    "provider_name": "Provider 001",
+    "specialty": "Cardiology",
+    "city": "Mumbai"
+  },
+  {
+    "provider_id": "P002",
+    "provider_name": "Provider 002",
+    "specialty": "General Medicine",
+    "city": "Pune"
+  },
+  {
+    "provider_id": "P003",
+    "provider_name": "Provider 003",
+    "specialty": "Orthopedics",
+    "city": "Pune"
+  },
+  {
+    "provider_id": "P004",
+    "provider_name": "Provider 004",
+    "specialty": "Cardiology",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P005",
+    "provider_name": "Provider 005",
+    "specialty": "Cardiology",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P006",
+    "provider_name": "Provider 006",
+    "specialty": "Dermatology",
+    "city": "Mumbai"
+  },
+  {
+    "provider_id": "P007",
+    "provider_name": "Provider 007",
+    "specialty": "Cardiology",
+    "city": "Mumbai"
+  },
+  {
+    "provider_id": "P008",
+    "provider_name": "Provider 008",
+    "specialty": "Orthopedics",
+    "city": "Pune"
+  },
+  {
+    "provider_id": "P009",
+    "provider_name": "Provider 009",
+    "specialty": "Neurology",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P010",
+    "provider_name": "Provider 010",
+    "specialty": "Cardiology",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P011",
+    "provider_name": "Provider 011",
+    "specialty": "Orthopedics",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P012",
+    "provider_name": "Provider 012",
+    "specialty": "Dermatology",
+    "city": "Pune"
+  },
+  {
+    "provider_id": "P013",
+    "provider_name": "Provider 013",
+    "specialty": "Dermatology",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P014",
+    "provider_name": "Provider 014",
+    "specialty": "General Medicine",
+    "city": "Mumbai"
+  },
+  {
+    "provider_id": "P015",
+    "provider_name": "Provider 015",
+    "specialty": "Orthopedics",
+    "city": "Nagpur"
+  },
+  {
+    "provider_id": "P016",
+    "provider_name": "Provider 016",
+    "specialty": "General Medicine",
+    "city": "Nashik"
+  },
+  {
+    "provider_id": "P017",
+    "provider_name": "Provider 017",
+    "specialty": "Orthopedics",
+    "city": "Pune"
+  },
+  {
+    "provider_id": "P018",
+    "provider_name": "Provider 018",
+    "specialty": "General Medicine",
+    "city": "Mumbai"
+  },
+  {
+    "provider_id": "P019",
+    "provider_name": "Provider 019",
+    "specialty": "Cardiology",
+    "city": "Nagpur"
+  },
+  {
+    "provider_id": "P020",
+    "provider_name": "Provider 020",
+    "specialty": "Cardiology",
+    "city": "Nashik"
+  },
+  {
+    "provider_id": "P021",
+    "provider_name": "Provider 021",
+    "specialty": "General Medicine",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P022",
+    "provider_name": "Provider 022",
+    "specialty": "General Medicine",
+    "city": "Mumbai"
+  },
+  {
+    "provider_id": "P023",
+    "provider_name": "Provider 023",
+    "specialty": "Dermatology",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P024",
+    "provider_name": "Provider 024",
+    "specialty": "Cardiology",
+    "city": "Nagpur"
+  },
+  {
+    "provider_id": "P025",
+    "provider_name": "Provider 025",
+    "specialty": "Cardiology",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P026",
+    "provider_name": "Provider 026",
+    "specialty": "General Medicine",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P027",
+    "provider_name": "Provider 027",
+    "specialty": "General Medicine",
+    "city": "Aurangabad"
+  },
+  {
+    "provider_id": "P028",
+    "provider_name": "Provider 028",
+    "specialty": "Orthopedics",
+    "city": "Mumbai"
+  },
+  {
+    "provider_id": "P029",
+    "provider_name": "Provider 029",
+    "specialty": "Cardiology",
+    "city": "Pune"
+  },
+  {
+    "provider_id": "P030",
+    "provider_name": "Provider 030",
+    "specialty": "General Medicine",
+    "city": "Mumbai"
+  }
+]

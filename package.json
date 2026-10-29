@@ -1,0 +1,27 @@
+{
+  "name": "healthcare-fraud-intelligence",
+  "version": "2.3.13",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "node --experimental-strip-types server.ts",
+    "lint": "node ./node_modules/typescript/bin/tsc --noEmit",
+    "test": "node --experimental-strip-types --test tests/graph_engine.test.ts tests/statistics.test.ts tests/scoring.test.ts tests/database_migrations.test.ts tests/database_init.test.ts tests/integration.test.ts tests/frontend_graph.test.mjs tests/methodology_accuracy.test.mjs",
+    "build": "node scripts/build.mjs",
+    "start": "node --experimental-strip-types dist/server.ts",
+    "db:backup": "node scripts/backup-db.mjs",
+    "db:reset": "node scripts/reset-db.mjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.13.0",
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.3"
+  }
+}

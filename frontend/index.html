@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#090f1d">
+  <title>Healthcare Fraud Intelligence</title>
+  <meta name="description" content="Explainable healthcare claims anomaly and referral-network analysis using synthetic data.">
+  <link rel="stylesheet" href="style.css?v=2.3.13">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Primary navigation">
+      <a class="brand" href="#overview" aria-label="Healthcare Fraud Intelligence home">
+        <span class="brand-mark">H<span>F</span></span>
+        <span class="brand-copy"><strong>HealthGuard</strong><small>FRAUD INTELLIGENCE</small></span>
+      </a>
+      <div class="nav-label">WORKSPACE</div>
+      <nav id="mainNav">
+        <button class="nav-item active" data-view="overview"><span class="nav-icon">◫</span>Overview</button>
+        <button class="nav-item" data-view="providers"><span class="nav-icon">♙</span>Providers<span class="nav-count" id="navProviderCount">—</span></button>
+        <button class="nav-item" data-view="claims"><span class="nav-icon">▤</span>Claims</button>
+        <button class="nav-item" data-view="referrals"><span class="nav-icon">⌘</span>Referral network</button>
+        <button class="nav-item" data-view="investigations"><span class="nav-icon">◎</span>Investigations</button>
+        <button class="nav-item" data-view="methodology"><span class="nav-icon">⌁</span>Methodology</button>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-foot">
+        <span class="status-dot"></span><span><strong id="storageStatus">Local SQLite</strong><small id="modelVersion">Model —</small></span>
+      </div>
+      <p class="sidebar-disclaimer">Synthetic demonstration data. Risk indicators support review; they do not establish fraud.</p>
+    </aside>
+
+    <main class="main-shell">
+      <header class="topbar">
+        <div class="breadcrumbs"><span>Workspace</span><span class="crumb-divider">/</span><strong id="pageCrumb">Overview</strong></div>
+        <div class="topbar-actions">
+          <span class="data-version" id="dataVersion">Data v—</span>
+          <button class="button button-quiet" id="refreshButton" type="button">↻ Refresh</button>
+          <button class="button button-primary" id="topAddButton" type="button">＋ Add provider</button>
+        </div>
+      </header>
+
+      <div class="content-shell">
+        <div id="globalAlert" class="alert hidden" role="alert"></div>
+        <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+        <section id="view-overview" class="view active" aria-labelledby="overviewTitle">
+          <div class="page-heading">
+            <div><div class="eyebrow">ANALYTICS WORKSPACE</div><h1 id="overviewTitle">Healthcare Fraud Intelligence</h1><p>Review billing anomalies and referral-network signals with traceable evidence.</p></div>
+            <div class="asof"><span class="live-pip"></span><span>Last calculated</span><strong id="calculatedAt">Loading…</strong></div>
+          </div>
+          <div id="summaryMetrics" class="metric-grid" aria-live="polite"></div>
+          <div class="overview-grid">
+            <section class="panel panel-large">
+              <div class="panel-heading"><div><h2>Highest-priority providers</h2><p>Heuristic score, with each available factor shown separately in the investigation view.</p></div><button class="text-button" data-go="providers">View all providers ↗</button></div>
+              <div class="table-wrap"><table><thead><tr><th>Provider</th><th>Specialty</th><th>Risk score</th><th>Risk category</th><th>Claims</th><th>Mean Z</th></tr></thead><tbody id="topProvidersBody"></tbody></table></div>
+              <div class="table-footnote">Providers without enough evidence are shown as “Insufficient data,” not assumed safe.</div>
+            </section>
+            <section class="panel">
+              <div class="panel-heading"><div><h2>Risk distribution</h2><p>Providers by current category</p></div></div>
+              <div id="riskDistribution" class="bar-list"></div>
+              <div class="legend-note">Categories use the same backend thresholds shown in Methodology.</div>
+            </section>
+            <section class="panel">
+              <div class="panel-heading"><div><h2>Referral components</h2><p>Current cyclic groups recalculated from referral events</p></div><button class="text-button" data-go="referrals">Explore ↗</button></div>
+              <p id="ringFreshness" class="graph-freshness">Checking network snapshot…</p><div id="ringList" class="ring-list"></div>
+            </section>
+            <section class="panel">
+              <div class="panel-heading"><div><h2>Billed amounts by specialty</h2><p>Sum of claim_amount, labelled as billed</p></div></div>
+              <div id="specialtyBars" class="bar-list"></div>
+            </section>
+            <section class="panel panel-large">
+              <div class="panel-heading"><div><h2>Recorded analytical history</h2><p>Stored data/model snapshots; a model update can occur without a data change</p></div><span class="pill pill-neutral" id="trendStatus">Baseline</span></div>
+              <div id="trendChart" class="trend-chart"></div>
+              <p id="trendNote" class="subtle-note"></p>
+            </section>
+          </div>
+          <div class="footnote-row"><span>Synthetic demo dataset · No real patient records</span><span>Model <b id="modelVersionInline">—</b> · <span id="summaryAnalyticsStatus">Analytics status: checking</span></span></div>
+        </section>
+
+        <section id="view-providers" class="view" aria-labelledby="providersTitle">
+          <div class="page-heading"><div><div class="eyebrow">ENTITY MANAGEMENT</div><h1 id="providersTitle">Provider directory</h1><p>Manage provider records and inspect the claims and network evidence behind each score.</p></div><button class="button button-primary" id="addProviderButton">＋ New provider</button></div>
+          <section class="panel">
+            <div class="toolbar"><label class="search-box"><span>⌕</span><input id="providerSearch" type="search" placeholder="Search ID, name, specialty or city" aria-label="Search providers"></label><select id="providerRiskFilter" aria-label="Filter by risk"><option value="">All risk categories</option><option>CRITICAL</option><option>HIGH</option><option>MEDIUM</option><option>LOW</option><option>INSUFFICIENT DATA</option></select><select id="providerStatusFilter" aria-label="Filter by provider status"><option value="ALL">All statuses</option><option value="ACTIVE">Active</option><option value="INACTIVE">Inactive</option></select><button class="button button-quiet" data-export="providers">⇩ Export CSV</button></div>
+            <div class="table-wrap"><table><thead><tr><th><button class="sort-button" data-sort-provider="provider_id">Provider ↕</button></th><th><button class="sort-button" data-sort-provider="specialty">Specialty ↕</button></th><th>City</th><th>Status</th><th><button class="sort-button" data-sort-provider="risk_score">Risk score ↕</button></th><th>Claims</th><th class="align-right">Actions</th></tr></thead><tbody id="providersBody"></tbody></table></div>
+            <div id="providersPagination" class="pagination"></div>
+          </section>
+        </section>
+
+        <section id="view-claims" class="view" aria-labelledby="claimsTitle">
+          <div class="page-heading"><div><div class="eyebrow">CLAIMS OPERATIONS</div><h1 id="claimsTitle">Claims register</h1><p>Search, create, edit and remove billed-claim records. Patient identifiers must be synthetic.</p></div><button class="button button-primary" id="addClaimButton">＋ New claim</button></div>
+          <section class="panel"><div class="toolbar"><label class="search-box"><span>⌕</span><input id="claimSearch" type="search" placeholder="Search claim, provider, procedure" aria-label="Search claims"></label><select id="claimSpecialtyFilter" aria-label="Filter claims by specialty"><option value="">All specialties</option></select><button class="button button-quiet" data-export="claims">⇩ Export CSV</button></div><div class="table-wrap"><table><thead><tr><th>Claim ID</th><th>Provider</th><th>Procedure</th><th>Specialty on claim</th><th>Claim date</th><th>Amount billed</th><th class="align-right">Actions</th></tr></thead><tbody id="claimsBody"></tbody></table></div><div id="claimsPagination" class="pagination"></div></section>
+        </section>
+
+        <section id="view-referrals" class="view" aria-labelledby="referralsTitle">
+          <div class="page-heading"><div><div class="eyebrow">NETWORK ANALYTICS</div><h1 id="referralsTitle">Referral network</h1><p>The original circular network layout is retained. Every provider stays visible, including isolated providers. Arrow tips clearly show who refers to whom; each line is one unique directed dependency, and ×N marks repeated referral events. Rings are reported only for cyclic SCCs with at least three providers.</p></div><button class="button button-primary" id="addReferralButton">＋ New referral</button></div>
+          <section class="panel"><div class="panel-heading"><div><h2>Whole directed provider network</h2><p>All providers remain in the same circular view, including isolated providers. Arrowheads show the direction from referring provider to recipient. Hover or focus a provider to highlight its incoming and outgoing connections.</p></div><span class="pill pill-neutral" id="graphCounts">Loading graph…</span></div><p id="graphFreshness" class="graph-freshness">Checking network snapshot…</p><div id="networkViz" class="network-viz" aria-label="Directed referral graph"></div><div class="graph-legend"><span><i class="legend-node node-ring"></i> Reportable ring · cyclic SCC with 3+ providers</span><span><i class="legend-node"></i> Other / non-ring provider</span><span><i class="legend-edge"></i> Unique directed dependency (arrow shows direction)</span><span class="graph-event-key">×N = referral-event count</span></div></section>
+          <section class="panel table-panel"><div class="panel-heading"><div><h2>Referral events</h2><p>Each event is stored, including repeated source/destination pairs.</p></div><div class="toolbar compact"><label class="search-box"><span>⌕</span><input id="referralSearch" type="search" placeholder="Search ID or provider" aria-label="Search referrals"></label><button class="button button-quiet" data-export="referrals">⇩ Export CSV</button></div></div><div class="table-wrap"><table><thead><tr><th>Referral ID</th><th>From</th><th>To</th><th>Reason</th><th>Event date</th><th class="align-right">Actions</th></tr></thead><tbody id="referralsBody"></tbody></table></div><div id="referralsPagination" class="pagination"></div></section>
+          <section class="panel"><div class="panel-heading"><div><h2>Detected cyclic components</h2><p>Each reportable component is summarized using a verified directed cycle path and its unique internal dependencies; the circular diagram above remains the only network visualization.</p></div></div><div id="ringListFull" class="ring-list ring-list-expanded"></div></section>
+        </section>
+
+        <section id="view-investigations" class="view" aria-labelledby="investigationsTitle">
+          <div class="page-heading"><div><div class="eyebrow">CASE MANAGEMENT</div><h1 id="investigationsTitle">Investigation workspace</h1><p>Case status is an investigator workflow field; it never changes the algorithmic risk score.</p></div><button class="button button-primary" id="addCaseButton">＋ Open investigation</button></div>
+          <section class="panel"><div class="toolbar"><label class="search-box"><span>⌕</span><input id="caseSearch" type="search" placeholder="Search cases or providers" aria-label="Search investigations"></label><select id="caseStatusFilter" aria-label="Filter investigations"><option value="">All case statuses</option><option>PENDING REVIEW</option><option>UNDER INVESTIGATION</option><option>RESOLVED</option><option>DISMISSED</option></select><button class="button button-quiet" data-export="investigations">⇩ Export CSV</button></div><div id="caseList" class="case-list"></div></section>
+          <section class="panel"><div class="panel-heading"><div><h2>Recent audit events</h2><p>Data-management actions are recorded with timestamps and before/after values.</p></div></div><div class="table-wrap"><table><thead><tr><th>When</th><th>Entity</th><th>ID</th><th>Operation</th><th>Change detail</th></tr></thead><tbody id="auditBody"></tbody></table></div></section>
+        </section>
+
+        <section id="view-methodology" class="view" aria-labelledby="methodTitle">
+          <div class="page-heading"><div><div class="eyebrow">TRANSPARENCY & LIMITATIONS</div><h1 id="methodTitle">Methodology & model notes</h1><p>Definitions used by the current version of Healthcare Fraud Intelligence.</p></div></div>
+          <div class="method-grid">
+            <article class="panel method-card">
+              <div class="method-index">01</div><h2>Billing amount anomaly</h2>
+              <p>The assessed provider is compared with other stored providers having the same current specialty. Each peer contributes one mean from valid claims whose saved claim specialty matches that peer's current specialty; the assessed provider is excluded. At least three distinct claim-bearing peer providers are required. Active status does not exclude a provider from this historical peer reference, and distinct providers are not guaranteed to be statistically independent.</p>
+              <div class="formula">amount ratio = provider's matching-specialty mean ÷ median(peer-provider means)<br>amount risk = round to 2 decimals of [0 when ratio ≤ 1; otherwise min(100, 100 × log₂(ratio) ÷ 4)]<br>Ratio is rounded to 6 decimal places before scoring.</div>
+              <p>Examples: 2× maps to 25, 4× to 50, 8× to 75, and 16× or higher to 100. Only unusually high ratios increase this component; unusually low amounts do not. A zero peer-median baseline is unevaluable, including the 0 ÷ 0 case, rather than silently being treated as a 1× ratio.</p>
+              <div class="formula">diagnostic Z = (provider mean − arithmetic mean of peer means) ÷ sample SD of peer means</div>
+              <p>The signed Z-score is displayed for context only. It can be negative, is unavailable when there are fewer than three peers or peer standard deviation is zero, and does not directly contribute to the final risk score. A valid Z-score can still be shown when the billing ratio is unevaluable because its peer median is zero. Amounts mean billed amounts, not insurer payments.</p>
+            </article>
+            <article class="panel method-card">
+              <div class="method-index">02</div><h2>Time-window activity</h2>
+              <p>The reproducible analysis date is the latest valid claim date in the stored dataset, not the computer's current date. Displayed 7-day and 30-day counts and billed sums include valid claims across all stored specialties; behavior scoring uses only claims whose preserved specialty matches the provider's current specialty. Each window uses an exclusive lower date boundary and an inclusive upper date boundary. The current 7-day window contains the analysis date and prior six dates; the current 30-day window contains the analysis date and prior 29 dates. The preceding 30-day window does not overlap the current 30-day window. Data-span flags describe date coverage only; they do not prove source-data completeness.</p>
+              <div class="formula">peer ratio = provider matching-specialty claims in current 30d ÷ median peer matching-specialty claims in current 30d<br>own trend ratio = provider matching-specialty claims in current 30d ÷ provider matching-specialty claims in prior 30d<br>burst ratio = (matching-specialty claims in last 7d ÷ 7) ÷ (matching-specialty claims in preceding 23d ÷ 23)<br>sub-score(r) = round to 2 decimals of clamp(100 × (r − 1) ÷ 1.5, 0, 100)<br>behavior score = weighted mean of available sub-scores using nominal weights 50% / 30% / 20%, renormalized over available signals.</div>
+              <p>The peer signal requires a full 30-day dataset span, at least three distinct claim-bearing same-specialty peers, and a peer median of at least three matching-specialty claims in the window. The own-trend signal requires a 60-day span and at least three matching-specialty claims in the preceding 30-day period. The burst signal requires a 30-day span and at least three matching-specialty claims in the preceding 23-day period. Ratios are rounded to four decimals before scoring. For each ratio, 1× or below maps to zero; 2.5× or above maps to 100. These are one-sided activity-increase signals; lower activity does not increase behavior risk.</p>
+              <p>At least two of the three behavior signals must be evaluable; otherwise the behavior component is withheld as insufficient evidence. If exactly two are available, the 50% / 30% / 20% nominal sub-weights are renormalized across those two. Thus an observed zero sub-score is different from an unavailable comparison. The older full-dataset normalized frequency remains descriptive context only and no longer drives behavior risk. This time-aware behavior component is a transparent heuristic, not a calibrated fraud probability.</p>
+            </article>
+            <article class="panel method-card">
+              <div class="method-index">03</div><h2>Referral graph</h2>
+              <p>Every stored referral record is an event. The graph has one directed edge for each unique from-provider → to-provider pair; repeated events are retained as an edge weight. Unique in/out degree counts distinct neighboring providers, while weighted in/out degree counts referral events. Self-referral events are retained but do not establish an inter-provider dependency.</p>
+              <div class="formula">SCC = a group of mutually reachable vertices<br>reportable ring = cyclic SCC containing at least 3 providers</div>
+              <p>Tarjan's algorithm calculates strongly connected components. Two-provider cycles and singleton self-loops are not reported as rings. The displayed cycle path is found by traversing actual directed edges; it is not inferred from a sorted provider list.</p>
+              <p>PageRank uses damping 0.85, event-count weighted outgoing transitions, redistribution of dangling-node rank, at most 200 iterations, a 1×10⁻¹⁰ convergence tolerance, and final normalization so provider ranks sum to 1. Referral structure and centrality are investigative context, not proof of fraud.</p>
+            </article>
+            <article class="panel method-card">
+              <div class="method-index">04</div><h2>Composite risk score</h2>
+              <div class="weight-list"><span>Billing-amount anomaly <b>40%</b></span><span>Referral-ring signal <b>30%</b></span><span>Network signal <b>20%</b></span><span>Comparative behavior <b>10%</b></span></div>
+              <div class="formula">network risk = round to 2 decimals of [0.6 × (PageRank ÷ max PageRank × 100) + 0.4 × (incident events ÷ max incident events × 100)]<br>incident events = weighted incoming events + weighted outgoing events</div>
+              <p>The network component is unavailable when the provider has no incident referral events. PageRank and incident-event activity are each divided by the maximum for the current graph, multiplied by 100, and clamped to 0–100. A referral event contributes an incoming/outgoing incidence to its endpoint providers; this is not the global count of unique relationships.</p>
+              <div class="formula">ring risk = round to 2 decimals of min(75, 35 + 30D + min(10, 2R))<br>D = unique internal inter-provider edges ÷ [n × (n − 1)]<br>R = sum of extra events beyond the first on each internal inter-provider edge</div>
+              <p>Here n is the number of providers in the SCC. Self-loops are excluded from D and R because they are not inter-provider dependencies. Ring risk is calculated only for a reportable cyclic SCC with at least three providers. When referral events exist but a provider is not in a reportable ring, its observed ring signal is 0; with no incident referral evidence the component is unevaluable.</p>
+              <div class="formula">final score = round to 2 decimals of [Σ_available(scoreᵢ × nominal_weightᵢ) ÷ Σ_available(nominal_weightᵢ)]</div>
+              <p>Component scores are bounded to 0–100. Unavailable components are excluded and remaining nominal weights are renormalized; an observed zero remains a real score. If all components are unavailable, the score is withheld as Insufficient data. Thresholds: Critical ≥80; High ≥60; Medium ≥35; otherwise Low.</p>
+              <p class="warning-note">All components and thresholds are transparent heuristics for prioritizing human review—not a calibrated fraud probability, a diagnosis, or validated predictive performance.</p>
+            </article>
+            <article class="panel method-card">
+              <div class="method-index">05</div><h2>Persistence & integrity</h2>
+              <p>Local records are stored in SQLite. Backend validation and database constraints protect relationships; provider, claim, and referral mutations are performed transactionally with audit events, data-version updates, analytics recalculation, and a stored analytical snapshot. A mutation rolls back if the calculation fails.</p>
+              <p>The starter dataset is synthetic and imported only for a genuinely new database. Startup does not overwrite normal user changes. Back up the database before changing or resetting records.</p>
+            </article>
+            <article class="panel method-card">
+              <div class="method-index">06</div><h2>What this system does not claim</h2>
+              <p>The application does not prove fraud, make causal conclusions, use genuine patient/insurance records, validate the heuristic against adjudicated fraud outcomes, or offer a calibrated probability of fraud.</p>
+              <p>Insufficient evidence is distinct from a normal finding. Local SQLite is intended for the single-machine project workflow; AWS/serverless persistence, multi-user authentication, and production healthcare compliance are not configured or claimed as operational.</p>
+            </article>
+          </div>
+          <div class="panel formula-footer"><strong id="methodModelVersion">Model —</strong><span id="methodThresholds">Thresholds —</span><span id="methodDataVersion">Data version —</span></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <dialog id="formDialog" class="modal"><form id="recordForm"><div class="modal-header"><div><div class="eyebrow" id="formEyebrow">RECORD MANAGEMENT</div><h2 id="formTitle">Add record</h2><p id="formDescription">Complete the required fields.</p></div><button class="icon-button" type="button" id="closeFormButton" aria-label="Close form">×</button></div><div id="formFields" class="form-fields"></div><div id="formError" class="form-error hidden" role="alert"></div><div class="modal-actions"><button class="button button-quiet" type="button" id="cancelFormButton">Cancel</button><button class="button button-primary" type="submit" id="saveFormButton">Save record</button></div></form></dialog>
+  <dialog id="detailDialog" class="modal modal-wide"><div class="modal-header"><div><div class="eyebrow">INVESTIGATION PROFILE</div><h2 id="detailTitle">Provider details</h2><p id="detailSubtitle"></p></div><button class="icon-button" type="button" id="closeDetailButton" aria-label="Close details">×</button></div><div id="detailContent" class="detail-content"></div><div class="modal-actions"><button class="button button-quiet" type="button" id="printDetailButton">Print report</button><button class="button button-primary" type="button" id="closeDetailButton2">Done</button></div></dialog>
+  <script src="app.js?v=2.3.13" defer></script>
+</body>
+</html>
